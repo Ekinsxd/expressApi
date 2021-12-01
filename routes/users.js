@@ -21,6 +21,7 @@ var passport = require('passport');
 var Strategy = require('passport-http').BasicStrategy
 var pbkdf2 = require('pbkdf2');
 var router = express.Router();
+let re = /(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9]))\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/;
 
 /**
  * Pull in the mongoose library and create a schema
@@ -120,6 +121,11 @@ router.get('/', checkAuth, async function(req, res, next) {
 	}
 });
 
+router.get('/new', async function(req, res, next) {
+	res.render('register', 
+	{ title: 'Registry Page' });
+});
+
 /**
  * GET a single user.
  * This function may be used by an administrator, or by a user
@@ -156,6 +162,33 @@ router.post('/', checkAuth, async function(req, res, next){
 		error.status = 401;
 		throw error;
         }
+});
+
+/**
+ * POST a new user.
+ * Create a new user from registration
+ */
+router.post('/new', async function(req, res, next){
+	console.log(req.body);
+    
+	var email = req.body.email;
+	var pw = req.body.password;
+	var pw2 = req.body.confirm_password;
+	if (re.test(email) && pw == pw2){
+		var newUser = User();
+		newUser.email = email;
+		newUser.salt = crypto.randomBytes(32).toString('hex');
+		console.log("Received: " + pw);
+		newUser.password = pbkdf2.pbkdf2Sync(pw, newUser.salt, 1, 32, 'sha512').toString('hex');
+		newUser.admin = false;
+		newUser.save();
+        console.log("Success!");
+        res.redirect('/');
+	}
+	else{
+		console.log("Invalid Email or Password confirmation.")
+	}
+        
 });
 
 module.exports = { checkAuth, router, User };
