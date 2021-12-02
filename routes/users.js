@@ -115,9 +115,7 @@ router.get('/', checkAuth, async function(req, res, next) {
 		var users = await User.find({})
 		res.json(users);
 	} else {
-		var error = new Error("Not authorized.");
-		error.status = 401;
-		throw err;
+		res.redirect('/login');
 	}
 });
 

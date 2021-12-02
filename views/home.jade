@@ -1,0 +1,18 @@
+extends layout
+
+block content
+  h1= title
+  //- p Welcome to #{title} POOOOOO
+
+  p You are logged in
+
+  script.
+    var login = function() {
+      window.location.href = '/loggedin'
+    }
+  
+  script.
+    var register = function() {
+      window.location.href = '/users/new'
+    }
+  
