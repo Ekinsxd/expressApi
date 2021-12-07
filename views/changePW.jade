@@ -3,18 +3,18 @@ extends layout
 block content
   h1= title
   //- p Welcome to #{title} POOOOOO
-  form(name="changePW", method="post")
-        div.input
-            span.label Current Password 
-            input(type="text", name="password")
-        div.input
-            span.label New Password 
-            input(type="text", name="new_password")
-        div.input
-            span.label Confirm New Password 
-            input(type="text", name="new_confirm_password")
-        div.actions
-            input(type="submit", value="Submit Changes")
+  form(name="changePW" method="post")
+    div.input
+      span.label Current Password 
+      input(type="text" name="password")
+    div.input
+      span.label New Password 
+      input(type="text" name="new_password")
+    div.input
+      span.label Confirm New Password 
+      input(type="text" name="new_confirm_password")
+    div.actions
+      input(type="submit" value="Submit Changes")
 
 
   button(onclick='home()') Back
@@ -23,5 +23,5 @@ block content
     var home = function() {
       window.location.href = '../'
     }
-  
-  
+
+

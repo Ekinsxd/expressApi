@@ -5,8 +5,14 @@ block content
   //- p Welcome to #{title} POOOOOO
 
   p You are logged in
+  button(onclick='view()') View All Users
   button(onclick='changePW()') Change Password
   button(onclick='deleteAcc()') Delete Your Account
+
+  script.
+    var view = function() {
+      window.location.href = '/users'
+    }
 
   script.
     var deleteAcc = function() {
@@ -17,6 +23,4 @@ block content
     var changePW = function() {
       window.location.href = '/loggedin/changePW'
     }
-
-  script(src="https://unpkg.com/vue@next").
 

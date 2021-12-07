@@ -1,0 +1,12 @@
+extends layout
+
+block content
+    h1= title
+    //- p Welcome to #{title} POOOOOO
+
+    button(onclick='deleteAcc()') Confirm
+
+    script.
+        var deleteAcc = function() {
+            window.location.href = `/loggedin/delete/confirm`
+        }

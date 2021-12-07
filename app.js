@@ -11,14 +11,13 @@
 /**********
  * Load all the libraries we need.
  **********/
-var createError = require('http-errors');
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var winston = require('winston');
-var mongoose = require('mongoose');
-var passport = require('passport');
-
+var createError = require("http-errors");
+var express = require("express");
+var path = require("path");
+var cookieParser = require("cookie-parser");
+var winston = require("winston");
+var mongoose = require("mongoose");
+var passport = require("passport");
 
 /**********
  * Setup the logger.
@@ -27,51 +26,53 @@ var passport = require('passport');
  * output to the console.
  **********/
 const logger = winston.createLogger({
-	level: 'info',
-	format: winston.format.json(),
-	defaultMeta: { service: 'JournalAPI' },
-	transports: [
-		new winston.transports.File({ filename: './logs/error.log', level: 'error' }),
-		new winston.transports.File({ filename: './logs/combined.log' }),
-	],
+  level: "info",
+  format: winston.format.json(),
+  defaultMeta: { service: "JournalAPI" },
+  transports: [
+    new winston.transports.File({
+      filename: "./logs/error.log",
+      level: "error",
+    }),
+    new winston.transports.File({ filename: "./logs/combined.log" }),
+  ],
 });
 
-if(process.env.NODE_ENV !== 'production'){
-	logger.add(new winston.transports.Console({
-		format: winston.format.simple(),
-	}));
+if (process.env.NODE_ENV !== "production") {
+  logger.add(
+    new winston.transports.Console({
+      format: winston.format.simple(),
+    })
+  );
 }
 
 /**********
  * Connect to the mongodb instance.
  * If this fails, we should stop the process.
- * Notice that using +srv on the protocol causes the 
+ * Notice that using +srv on the protocol causes the
  * connection to use ssl by default.
  **********/
-const uri = 'mongodb+srv://Ethan:PoopyPants@cluster0.tsjxg.mongodb.net/Journal?retryWrites=true&w=majority'
-mongoose.connect(uri).
-	catch( error => 
-		{ 
-			logger.error('Cannot connect to mongo instance.');
-			logger.error(error);
-			logger.error('Shutting down API.');
-			process.exit(1);
-	}
-);
-
-mongoose.connection.on('error', err => {
-	logger.error('Problem with the database connection...');
-	logger.error(err);
+const uri =
+  "mongodb+srv://Ethan:PoopyPants@cluster0.tsjxg.mongodb.net/Journal?retryWrites=true&w=majority";
+mongoose.connect(uri).catch((error) => {
+  logger.error("Cannot connect to mongo instance.");
+  logger.error(error);
+  logger.error("Shutting down API.");
+  process.exit(1);
 });
 
+mongoose.connection.on("error", (err) => {
+  logger.error("Problem with the database connection...");
+  logger.error(err);
+});
 
 /**********
  * Load the routes from the route files.
  **********/
-var indexRouter = require('./routes/index.js');
-var usersRouter = require('./routes/users.js');
-var entriesRouter = require('./routes/entries.js');
-var loginRouter = require('./routes/login.js');
+var indexRouter = require("./routes/index.js");
+var usersRouter = require("./routes/users.js");
+var entriesRouter = require("./routes/entries.js");
+var loginRouter = require("./routes/login.js");
 
 /**********
  * Create an express app instance and setup all
@@ -80,34 +81,34 @@ var loginRouter = require('./routes/login.js');
 var app = express();
 
 // view engine setup (for later!)
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'jade');
+app.set("views", path.join(__dirname, "views"));
+app.set("view engine", "jade");
 
 app.use(passport.initialize());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, "public")));
 
-app.use('/', indexRouter);
-app.use('/users', usersRouter.router);
-app.use('/entries', entriesRouter.router);
-app.use('/loggedin', usersRouter.checkAuth, loginRouter.router);
+app.use("/", indexRouter);
+app.use("/users", usersRouter.router);
+app.use("/entries", entriesRouter.router);
+app.use("/loggedin", usersRouter.checkAuth, loginRouter.router);
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
   next(createError(404));
 });
 
 // error handler middleware
-app.use(function(err, req, res, next) {
+app.use(function (err, req, res, next) {
   // set locals, only providing error in development
   res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
+  res.locals.error = req.app.get("env") === "development" ? err : {};
 
   // render the error page
   res.status(err.status || 500);
-  res.render('error');
+  res.render("error");
 });
 
 module.exports = app;
