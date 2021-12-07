@@ -5,14 +5,12 @@ block content
   //- p Welcome to #{title} POOOOOO
 
   p You are logged in
+  button(onclick='changePW()') Change Password
 
   script.
-    var login = function() {
-      window.location.href = '/loggedin'
+    var changePW = function() {
+      window.location.href = '/loggedin/changePW'
     }
   
-  script.
-    var register = function() {
-      window.location.href = '/users/new'
-    }
+  script(src="https://unpkg.com/vue@next").
   

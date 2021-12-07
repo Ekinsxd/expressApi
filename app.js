@@ -92,7 +92,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/users', usersRouter.router);
 app.use('/entries', entriesRouter.router);
-app.use('/loggedin', loginRouter.router);
+app.use('/loggedin', usersRouter.checkAuth, loginRouter.router);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

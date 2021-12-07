@@ -63,7 +63,7 @@ const User = mongoose.model('User', userSchema);
 const validPassword = function(password, salt, hash){
 	let key = pbkdf2.pbkdf2Sync(password, salt, 1, 32, 'sha512');
 
-	if(key.toString('hex') != hash){
+	if(key.toString('hex') != hash.toString('hex')){
 		return false;
 	}
 	return true;
@@ -76,7 +76,7 @@ const validPassword = function(password, salt, hash){
  */
 passport.use(new Strategy(
 	function(username, password, done) {
-	  User.findOne({ username: username }, function (err, user) {
+	  User.findOne({ email: username }, function (err, user) {
 		  // Can't connect to Db?  We're done.
 		if (err) {
 			return done(err);
@@ -88,7 +88,10 @@ passport.use(new Strategy(
 		}
 		// Got this far?  Check the password.
 		if (!validPassword(password, user.salt, user.password)) { 
+			console.log(user)
 			console.log("Wrong password.");
+			console.log(pbkdf2.pbkdf2Sync(password, user.salt, 1, 32, 'sha512').toString('hex'));
+			console.log(user.password);
 			return done(null, false);
 		}
 		// Otherwise, let them in and store the user in req.
@@ -115,7 +118,7 @@ router.get('/', checkAuth, async function(req, res, next) {
 		var users = await User.find({})
 		res.json(users);
 	} else {
-		res.redirect('/login');
+		res.redirect('/loggedin');
 	}
 });
 
@@ -146,7 +149,8 @@ router.get('/:userId', checkAuth, async function(req, res, next){
  */
 router.post('/', checkAuth, async function(req, res, next){
 	console.log(req.body);
-	if(req.user.admin){
+	var user = await User.findOne({ email : req.body.username });
+	if(!user & req.user.admin){
 		var newUser = User();
 		newUser.email = req.body.username;
 		newUser.salt = crypto.randomBytes(32).toString('hex');
@@ -169,10 +173,11 @@ router.post('/', checkAuth, async function(req, res, next){
 router.post('/new', async function(req, res, next){
 	console.log(req.body);
     
-	var email = req.body.email;
-	var pw = req.body.password;
-	var pw2 = req.body.confirm_password;
-	if (re.test(email) && pw == pw2){
+	var email = String(req.body.email).toLowerCase();
+	var pw = 	String(req.body.password);
+	var pw2 = 	String(req.body.confirm_password);
+	var user = await User.findOne({ email : req.body.email });
+	if (!user & re.test(email) & pw == pw2){
 		var newUser = User();
 		newUser.email = email;
 		newUser.salt = crypto.randomBytes(32).toString('hex');
