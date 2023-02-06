@@ -1,0 +1,19 @@
+extends layout
+
+block content
+  h1= title
+  //- p Welcome to #{title} POOOOOO
+
+  button(onclick='view()') View Journals
+  button(onclick='addEntry()') Add an Entry
+
+  script.
+    var view = function() {
+      window.location.href = '/journal/view'
+    }
+
+  script.
+    var addEntry = function() {
+      window.location.href = '/journal/add'
+    }
+

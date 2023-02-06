@@ -73,6 +73,7 @@ var indexRouter = require("./routes/index.js");
 var usersRouter = require("./routes/users.js");
 var entriesRouter = require("./routes/entries.js");
 var loginRouter = require("./routes/login.js");
+var journalRouter = require("./routes/journal.js");
 
 /**********
  * Create an express app instance and setup all
@@ -94,6 +95,7 @@ app.use("/", indexRouter);
 app.use("/users", usersRouter.router);
 app.use("/entries", entriesRouter.router);
 app.use("/loggedin", usersRouter.checkAuth, loginRouter.router);
+app.use("/journal", usersRouter.checkAuth, journalRouter.router);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
